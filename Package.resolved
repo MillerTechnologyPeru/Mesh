@@ -1,0 +1,52 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Bluetooth",
+        "repositoryURL": "https://github.com/PureSwift/Bluetooth.git",
+        "state": {
+          "branch": "master",
+          "revision": "a14044af24f9e7344af3dc1f65fec46bb01e8246",
+          "version": null
+        }
+      },
+      {
+        "package": "BluetoothLinux",
+        "repositoryURL": "https://github.com/PureSwift/BluetoothLinux.git",
+        "state": {
+          "branch": "master",
+          "revision": "bf54a2126ce6f03b2177a1c148e76ec82870aae9",
+          "version": null
+        }
+      },
+      {
+        "package": "GATT",
+        "repositoryURL": "https://github.com/PureSwift/GATT.git",
+        "state": {
+          "branch": "master",
+          "revision": "8bb24d5211d704bb73f8aba1bca426dbe066216d",
+          "version": null
+        }
+      },
+      {
+        "package": "LoStik",
+        "repositoryURL": "https://github.com/MillerTechnologyPeru/LoStik.git",
+        "state": {
+          "branch": "swift",
+          "revision": "46bdb6c371c4624ce078608114a87ffb7c910205",
+          "version": null
+        }
+      },
+      {
+        "package": "SwiftSerial",
+        "repositoryURL": "https://github.com/MillerTechnologyPeru/SwiftSerial.git",
+        "state": {
+          "branch": "master",
+          "revision": "581ebc7e100ed42a91a29d6f6b09b1bd28eb76ef",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}

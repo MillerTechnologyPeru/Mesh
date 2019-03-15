@@ -1,2 +1,5 @@
 # Mesh
-BLE Mesh with Internet Gateway for decentralized messaging 
+
+Swift LoRa / Bluetooth LE Mesh Networking Stack
+
+

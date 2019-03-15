@@ -34,6 +34,9 @@ public struct Message {
      */
     public var hopLimit: UInt8
     
+    /**
+     Payload Type UUID
+     */
     public let payloadType: UUID
     
     /**
@@ -49,10 +52,60 @@ public struct Message {
                 payload: Data) {
         
         self.identifier = identifier
-        self.hopLimit = hopLimit
         self.source = source
         self.destination = destination
+        self.hopLimit = hopLimit
         self.payloadType = payloadType
         self.payload = payload
+    }
+}
+
+public extension Message {
+    
+    public init?(data: Data) {
+        
+        var data = DataIterator(data: data)
+        
+        guard let version = data.consumeByte({ Version(rawValue: $0) }),
+            version == Message.version, // must match version
+            let identifier = data.consume(UUID.length, { UUID(data: $0)?.littleEndian }),
+            let source = data.consume(UUID.length, { UUID(data: $0)?.littleEndian }),
+            let destination = data.consume(UUID.length, { UUID(data: $0)?.littleEndian }),
+            let hopLimit = data.consumeByte(),
+            let payloadType = data.consume(UUID.length, { UUID(data: $0)?.littleEndian })
+            else { return nil }
+        
+        self.identifier = identifier
+        self.source = source
+        self.destination = destination
+        self.hopLimit = hopLimit
+        self.payloadType = payloadType
+        self.payload = data.suffix() ?? Data()
+    }
+    
+    public var data: Data {
+        
+        return Data(self)
+    }
+}
+
+// MARK: - DataConvertible
+
+extension Message: DataConvertible {
+    
+    static func += <T: DataContainer> (data: inout T, value: Message) {
+        
+        data += type(of: value).version.rawValue
+        data += value.identifier.littleEndian
+        data += value.source.littleEndian
+        data += value.destination.littleEndian
+        data += value.hopLimit
+        data += value.payloadType.littleEndian
+        data += value.payload
+    }
+    
+    var dataLength: Int {
+        
+        return 1 + (UUID.length * 4) + 1 + payload.count
     }
 }

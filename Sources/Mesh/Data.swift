@@ -148,6 +148,66 @@ extension Data: DataContainer {
     #endif
 }
 
+internal struct DataIterator {
+    
+    public let data: Data
+    
+    public init(data: Data) {
+        self.data = data
+    }
+    
+    public private(set) var index: Int = 0
+    
+    public mutating func reset() {
+        
+        index = 0
+    }
+    
+    public mutating func consume<T>(_ count: Int, _ block: (Data) -> T?) -> T? {
+        
+        guard index + count < data.count
+            else { return nil } // out of bytes
+        
+        let subdata = data.subdataNoCopy(in: index ..< index + count)
+        
+        index += count
+        
+        return block(subdata)
+    }
+    
+    public mutating func consumeByte() -> UInt8? {
+        
+        guard index + 1 < data.count
+            else { return nil } // out of bytes
+        
+        let byte = data[index]
+        
+        index += 1
+        
+        return byte
+    }
+    
+    public mutating func consumeByte<T>(_ block: (UInt8) -> T) -> T? {
+        
+        guard let byte = consumeByte()
+            else { return nil }
+        
+        return block(byte)
+    }
+    
+    public mutating func suffix() -> Data? {
+        
+        guard index + 1 < data.count // at least one byte left
+            else { return nil } // end of data
+        
+        let suffix = data.suffix(from: index)
+        
+        assert(suffix.count == data.count - index)
+        
+        return suffix
+    }
+}
+
 // MARK: - Bluetooth
 
 #if canImport(Bluetooth)
@@ -155,3 +215,4 @@ import Bluetooth
 extension Bluetooth.BluetoothAddress: UnsafeDataConvertible { }
 extension Bluetooth.LowEnergyAdvertisingData: DataContainer { }
 #endif
+

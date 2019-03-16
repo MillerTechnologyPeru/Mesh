@@ -11,3 +11,15 @@ public enum LinkLayer: UInt8 {
     case loRa       = 2
     case ip         = 3 // Ethernet, WiFi, 3G, etc
 }
+
+public extension LinkLayer {
+    
+    var maximumTransmissionUnit: UInt16 {
+        
+        switch self {
+        case .loRa: return 255
+        case .bluetooth: return 512
+        case .ip: return .max
+        }
+    }
+}

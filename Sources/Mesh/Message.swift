@@ -37,7 +37,7 @@ public struct Message: Equatable, Hashable {
     /**
      Payload Type UUID
      */
-    public let payloadType: UUID
+    public let payloadType: PayloadType
     
     /**
      The payload to send.
@@ -48,7 +48,7 @@ public struct Message: Equatable, Hashable {
                 source: UUID,
                 destination: UUID,
                 hopLimit: UInt8 = .max,
-                payloadType: UUID,
+                payloadType: PayloadType,
                 payload: Data) {
         
         self.identifier = identifier
@@ -72,7 +72,7 @@ public extension Message {
             let source = data.consume(UUID.length, { UUID(data: $0)?.littleEndian }),
             let destination = data.consume(UUID.length, { UUID(data: $0)?.littleEndian }),
             let hopLimit = data.consumeByte(),
-            let payloadType = data.consume(UUID.length, { UUID(data: $0)?.littleEndian })
+            let payloadType = data.consumeByte({ PayloadType(rawValue: $0) })
             else { return nil }
         
         self.identifier = identifier
@@ -100,12 +100,23 @@ extension Message: DataConvertible {
         data += value.source.littleEndian
         data += value.destination.littleEndian
         data += value.hopLimit
-        data += value.payloadType.littleEndian
+        data += value.payloadType.rawValue
         data += value.payload
     }
     
     var dataLength: Int {
         
-        return 1 + (UUID.length * 4) + 1 + payload.count
+        return 1 + (UUID.length * 3) + 2 + payload.count
     }
+}
+
+// MARK: - Supporting Types
+
+public protocol MessagePayload {
+    
+    static var payloadType: PayloadType { get }
+    
+    init?(data: Data)
+    
+    var data: Data { get }
 }

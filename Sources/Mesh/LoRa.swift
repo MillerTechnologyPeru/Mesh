@@ -13,9 +13,6 @@ public protocol LoRaMessage {
     /// LoRa Message Type
     static var messageType: LoRaMessageType { get }
     
-    /// Source LoRa Device
-    var device: UUID { get }
-    
     init?(data: Data)
     
     var data: Data { get }

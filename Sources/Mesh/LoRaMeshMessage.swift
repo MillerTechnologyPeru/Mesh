@@ -12,9 +12,47 @@ public struct LoRaMeshMessage: Equatable, Hashable, LoRaMessage {
     
     public static let messageType: LoRaMessageType = .meshMessage
     
-    /// Source LoRa Device
-    public let device: UUID
-    
     /// Mesh Message / Packet
     public let message: Mesh.Message
+    
+    public init(message: Mesh.Message) {
+        
+        self.message = message
+    }
+}
+
+public extension LoRaMeshMessage {
+    
+    public init?(data: Data) {
+        
+        var data = DataIterator(data: data)
+        
+        guard let messageType = data.consumeByte({ LoRaMessageType(rawValue: $0) }),
+            messageType == type(of: self).messageType,
+            let message = data.suffix({ Mesh.Message(data: $0) })
+            else { return nil }
+        
+        self.message = message
+    }
+    
+    public var data: Data {
+        
+        return Data(self)
+    }
+}
+
+// MARK: - DataConvertible
+
+extension LoRaMeshMessage: DataConvertible {
+    
+    static func += <T: DataContainer> (data: inout T, value: LoRaMeshMessage) {
+        
+        data += type(of: value).messageType.rawValue
+        data += value.message
+    }
+    
+    var dataLength: Int {
+        
+        return 1 + UUID.length + message.dataLength
+    }
 }

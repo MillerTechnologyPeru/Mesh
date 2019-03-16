@@ -207,6 +207,18 @@ internal struct DataIterator {
         
         return suffix
     }
+    
+    public mutating func suffix <T> (_ block: (Data) -> T?) -> T? {
+        
+        guard index + 1 < data.count // at least one byte left
+            else { return nil } // end of data
+        
+        let suffix = data.suffixNoCopy(from: index)
+        
+        assert(suffix.count == data.count - index)
+        
+        return block(suffix)
+    }
 }
 
 // MARK: - Bluetooth

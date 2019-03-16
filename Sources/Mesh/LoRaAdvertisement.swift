@@ -26,7 +26,9 @@ public extension LoRaAdvertisement {
         
         var data = DataIterator(data: data)
         
-        guard let device = data.consume(UUID.length, { UUID(data: $0)?.littleEndian })
+        guard let messageType = data.consumeByte({ LoRaMessageType(rawValue: $0) }),
+            messageType == type(of: self).messageType,
+            let device = data.consume(UUID.length, { UUID(data: $0)?.littleEndian })
             else { return nil }
         
         self.device = device
@@ -42,5 +44,14 @@ public extension LoRaAdvertisement {
 
 extension LoRaAdvertisement: DataConvertible {
     
+    static func += <T: DataContainer> (data: inout T, value: LoRaAdvertisement) {
+        
+        data += type(of: value).messageType.rawValue
+        data += value.device.littleEndian
+    }
     
+    var dataLength: Int {
+        
+        return 1 + UUID.length
+    }
 }

@@ -56,13 +56,14 @@ internal protocol DataConvertible {
     var dataLength: Int { get }
 }
 
-extension Data {
+internal extension Data {
     
     /// Initialize data with contents of value.
     @inline(__always)
     init <T: DataConvertible> (_ value: T) {
         self.init(capacity: value.dataLength)
         self += value
+        assert(self.count == value.dataLength, "\(T.self) invalid data length")
     }
 }
 

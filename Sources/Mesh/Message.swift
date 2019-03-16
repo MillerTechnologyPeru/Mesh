@@ -8,7 +8,7 @@
 import Foundation
 
 /// Mesh Message
-public struct Message {
+public struct Message: Equatable, Hashable {
     
     public static var version: Version { return .v1 }
     

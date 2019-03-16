@@ -7,30 +7,23 @@
 
 import Foundation
 
+/// LoRa Message
+public protocol LoRaMessage {
+    
+    /// LoRa Message Type
+    static var messageType: LoRaMessageType { get }
+    
+    /// Source LoRa Device
+    var device: UUID { get }
+    
+    init?(data: Data)
+    
+    var data: Data { get }
+}
+
 /// LoRa Message Type
 public enum LoRaMessageType: UInt8 {
     
-    case advertisement
-    case message
-}
-
-/// LoRa Advertisment
-public struct LoRaAdvertisement {
-    
-    public static let mesageType: LoRaMessageType = .advertisement
-    
-    /// Source LoRa Device
-    public let device: UUID
-}
-
-/// LoRa Mesh Message
-public struct LoRaMessage {
-    
-    public static let mesageType: LoRaMessageType = .message
-    
-    /// Source LoRa Device
-    public let device: UUID
-    
-    /// Mesh Message / Packet
-    public let message: Mesh.Message
+    case advertisement      = 0
+    case meshMessage        = 1
 }

@@ -7,33 +7,9 @@
 
 import Foundation
 
-extension UUID: DataConvertible {
+internal extension UUID {
     
-    static func += <T>(data: inout T, value: UUID) where T : DataContainer {
-        
-        data.append(contentsOf: [
-            value.uuid.0,
-            value.uuid.1,
-            value.uuid.2,
-            value.uuid.3,
-            value.uuid.4,
-            value.uuid.5,
-            value.uuid.6,
-            value.uuid.7,
-            value.uuid.8,
-            value.uuid.9,
-            value.uuid.10,
-            value.uuid.11,
-            value.uuid.12,
-            value.uuid.13,
-            value.uuid.14,
-            value.uuid.15
-            ])
-    }
-    
-    var dataLength: Int {
-        return UUID.length
-    }
+    static var zero: UUID { return UUID(uuid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) }
 }
 
 internal extension UUID {
@@ -66,6 +42,37 @@ internal extension UUID {
             uuid.2,
             uuid.1,
             uuid.0
-            ))
+        ))
+    }
+}
+
+// MARK: - DataConvertible
+
+extension UUID: DataConvertible {
+    
+    static func += <T>(data: inout T, value: UUID) where T : DataContainer {
+        
+        data.append(contentsOf: [
+            value.uuid.0,
+            value.uuid.1,
+            value.uuid.2,
+            value.uuid.3,
+            value.uuid.4,
+            value.uuid.5,
+            value.uuid.6,
+            value.uuid.7,
+            value.uuid.8,
+            value.uuid.9,
+            value.uuid.10,
+            value.uuid.11,
+            value.uuid.12,
+            value.uuid.13,
+            value.uuid.14,
+            value.uuid.15
+            ])
+    }
+    
+    var dataLength: Int {
+        return UUID.length
     }
 }

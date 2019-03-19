@@ -31,6 +31,8 @@ public extension TransmissionControl {
     
     public struct DataChunk {
         
+        public let port: UInt16
+        
         public let sequence: UInt32
         
         public let checksum: UInt32
@@ -45,6 +47,8 @@ public extension TransmissionControl {
         
         public let identifier: UUID
         
+        public let port: UInt16
+        
         public let total: UInt32
         
         public let chunksCount: UInt32
@@ -56,6 +60,8 @@ public extension TransmissionControl {
 public extension TransmissionControl {
     
     public struct Acknowledgement {
+        
+        public let port: UInt16
         
         public let sequence: UInt32
         

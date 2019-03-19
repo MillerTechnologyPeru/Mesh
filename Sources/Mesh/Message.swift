@@ -66,13 +66,13 @@ public extension Message {
         
         var data = DataIterator(data: data)
         
-        guard let version = data.consumeByte({ Version(rawValue: $0) }),
+        guard let version = data.consume({ Version(rawValue: $0) }),
             version == Message.version, // must match version
             let identifier = data.consume(UUID.length, { UUID(data: $0)?.littleEndian }),
             let source = data.consume(UUID.length, { UUID(data: $0)?.littleEndian }),
             let destination = data.consume(UUID.length, { UUID(data: $0)?.littleEndian }),
-            let hopLimit = data.consumeByte(),
-            let payloadType = data.consumeByte({ PayloadType(rawValue: $0) })
+            let hopLimit = data.consume(UInt8.self),
+            let payloadType = data.consume({ PayloadType(rawValue: $0) })
             else { return nil }
         
         self.identifier = identifier

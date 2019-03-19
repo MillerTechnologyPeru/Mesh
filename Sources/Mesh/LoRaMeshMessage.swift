@@ -27,7 +27,7 @@ public extension LoRaMeshMessage {
         
         var data = DataIterator(data: data)
         
-        guard let messageType = data.consumeByte({ LoRaMessageType(rawValue: $0) }),
+        guard let messageType = data.consume({ LoRaMessageType(rawValue: $0) }),
             messageType == type(of: self).messageType,
             let message = data.suffix({ Mesh.Message(data: $0) })
             else { return nil }

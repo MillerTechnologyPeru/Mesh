@@ -14,8 +14,6 @@ internal extension UUID {
 
 internal extension UUID {
     
-    static var length: Int { return 16 }
-    
     init(littleEndian uuid: UUID) {
         
         /// Foundation always stores in Big Endian format
@@ -74,5 +72,21 @@ extension UUID: DataConvertible {
     
     var dataLength: Int {
         return UUID.length
+    }
+}
+
+// MARK: - DataIterable
+
+extension UUID: DataIterable {
+    
+    static var length: Int { return 16 }
+    
+    init?(data: Data) {
+        
+        guard data.count == type(of: self).length
+            else { return nil }
+        
+        let bytes: uuid_t = data.withUnsafeBytes { $0.pointee }
+        self.init(uuid: bytes)
     }
 }

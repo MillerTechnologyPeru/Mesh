@@ -100,6 +100,118 @@ extension UnsafeDataConvertible {
 extension UInt16: UnsafeDataConvertible { }
 extension UInt32: UnsafeDataConvertible { }
 extension UInt64: UnsafeDataConvertible { }
+extension Double: UnsafeDataConvertible { }
+
+// MARK: - DataIterator
+
+internal struct DataIterator {
+    
+    public let data: Data
+    
+    public init(data: Data) {
+        self.data = data
+    }
+    
+    public private(set) var index: Int = 0
+    
+    public mutating func reset() {
+        
+        index = 0
+    }
+    
+    public mutating func consume<T>(_ count: Int, _ block: (Data) -> T?) -> T? {
+        
+        guard index + count <= data.count
+            else { return nil } // out of bytes
+        
+        let subdata = data.subdataNoCopy(in: index ..< index + count)
+        
+        index += count
+        
+        return block(subdata)
+    }
+    
+    public mutating func consume <T: DataIterable> (_ type: T.Type) -> T? {
+        
+        return consume(T.length) { T.init(data: $0) }
+    }
+    
+    public mutating func consume <T: DataIterable, Result> (_ block: (T) -> Result) -> Result? {
+        
+        guard let value = self.consume(T.length, { T.init(data: $0) })
+            else { return nil }
+        
+        return block(value)
+    }
+    
+     public mutating func consume() -> UInt8? {
+     
+        // optimization
+        
+        guard index + 1 <= data.count
+            else { return nil } // out of bytes
+        
+        let byte = data[index]
+        
+        index += 1
+        
+        return byte
+     }
+    
+    public mutating func suffix() -> Data? {
+        
+        guard index + 1 <= data.count // at least one byte left
+            else { return nil } // end of data
+        
+        let suffix = data.suffix(from: index)
+        
+        assert(suffix.count == data.count - index)
+        
+        return suffix
+    }
+    
+    public mutating func suffix <T> (_ block: (Data) -> T?) -> T? {
+        
+        guard index + 1 <= data.count // at least one byte left
+            else { return nil } // end of data
+        
+        let suffix = data.suffixNoCopy(from: index)
+        
+        assert(suffix.count == data.count - index)
+        
+        return block(suffix)
+    }
+}
+
+internal protocol DataIterable {
+    
+    /// Number of bytes
+    static var length: Int { get }
+    
+    /// Initialize from data.
+    init?(data: Data)
+}
+
+internal protocol UnsafeDataIterable: DataIterable { }
+
+extension UnsafeDataIterable {
+    
+    static var length: Int { return MemoryLayout<Self>.size }
+    
+    init?(data: Data) {
+        
+        guard data.count == Self.length
+            else { return nil }
+        
+        self = data.withUnsafeBytes { $0.pointee }
+    }
+}
+
+extension UInt8: UnsafeDataIterable { }
+extension UInt16: UnsafeDataIterable { }
+extension UInt32: UnsafeDataIterable { }
+extension UInt64: UnsafeDataIterable { }
+extension Double: UnsafeDataIterable { }
 
 // MARK: - DataContainer
 
@@ -147,78 +259,6 @@ extension Data: DataContainer {
         lhs.append(rhs)
     }
     #endif
-}
-
-internal struct DataIterator {
-    
-    public let data: Data
-    
-    public init(data: Data) {
-        self.data = data
-    }
-    
-    public private(set) var index: Int = 0
-    
-    public mutating func reset() {
-        
-        index = 0
-    }
-    
-    public mutating func consume<T>(_ count: Int, _ block: (Data) -> T?) -> T? {
-        
-        guard index + count < data.count
-            else { return nil } // out of bytes
-        
-        let subdata = data.subdataNoCopy(in: index ..< index + count)
-        
-        index += count
-        
-        return block(subdata)
-    }
-    
-    public mutating func consumeByte() -> UInt8? {
-        
-        guard index + 1 < data.count
-            else { return nil } // out of bytes
-        
-        let byte = data[index]
-        
-        index += 1
-        
-        return byte
-    }
-    
-    public mutating func consumeByte<T>(_ block: (UInt8) -> T) -> T? {
-        
-        guard let byte = consumeByte()
-            else { return nil }
-        
-        return block(byte)
-    }
-    
-    public mutating func suffix() -> Data? {
-        
-        guard index + 1 < data.count // at least one byte left
-            else { return nil } // end of data
-        
-        let suffix = data.suffix(from: index)
-        
-        assert(suffix.count == data.count - index)
-        
-        return suffix
-    }
-    
-    public mutating func suffix <T> (_ block: (Data) -> T?) -> T? {
-        
-        guard index + 1 < data.count // at least one byte left
-            else { return nil } // end of data
-        
-        let suffix = data.suffixNoCopy(from: index)
-        
-        assert(suffix.count == data.count - index)
-        
-        return block(suffix)
-    }
 }
 
 // MARK: - Bluetooth

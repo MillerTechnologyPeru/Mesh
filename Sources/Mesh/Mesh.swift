@@ -8,4 +8,10 @@
 
 import Foundation
 
-
+/// Socket for writing mesh messages / packets.
+public protocol MeshSocket {
+    
+    func write(_ message: Message) throws
+    
+    var read: (Message) -> () { get }
+}

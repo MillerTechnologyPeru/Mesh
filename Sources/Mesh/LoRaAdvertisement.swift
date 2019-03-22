@@ -8,7 +8,7 @@
 import Foundation
 
 /// LoRa Advertisment
-public struct LoRaAdvertisement: Equatable, Hashable, LoRaMessage {
+public struct LoRaAdvertisement: Equatable, Hashable, LoRaMessageProtocol {
     
     public static let messageType: LoRaMessageType = .advertisement
     

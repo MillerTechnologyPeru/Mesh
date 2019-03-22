@@ -8,7 +8,7 @@
 import Foundation
 
 /// LoRa Mesh Message
-public struct LoRaMeshMessage: Equatable, Hashable, LoRaMessage {    
+public struct LoRaMeshMessage: Equatable, Hashable, LoRaMessageProtocol {    
     
     public static let messageType: LoRaMessageType = .meshMessage
     

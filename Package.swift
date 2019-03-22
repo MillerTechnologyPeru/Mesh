@@ -4,8 +4,10 @@
 import PackageDescription
 
 #if os(macOS)
+let nativeGATT = "DarwinGATT"
 let nativeBluetooth = "BluetoothDarwin"
 #elseif os(Linux)
+let nativeGATT = "GATT"
 let nativeBluetooth = "BluetoothLinux"
 #endif
 
@@ -14,7 +16,16 @@ let package = Package(
     products: [
         .library(
             name: "Mesh",
-            targets: ["Mesh"]),
+            targets: ["Mesh"]
+        ),
+        .executable(
+            name: "meshutil",
+            targets: ["meshutil"]
+        ),
+        .executable(
+            name: "meshd",
+            targets: ["meshd"]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/PureSwift/\(nativeBluetooth).git", .branch("master")),
@@ -25,6 +36,16 @@ let package = Package(
         .target(
             name: "Mesh",
             dependencies: ["GATT", "LoStik"]),
+        .target(
+            name: "meshutil",
+            dependencies: ["Mesh"]),
+        .target(
+            name: "meshd",
+            dependencies: [
+                "Mesh",
+                .byNameItem(name: nativeBluetooth),
+                .byNameItem(name: nativeGATT)
+            ]),
         .testTarget(
             name: "MeshTests",
             dependencies: ["Mesh"]),

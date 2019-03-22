@@ -13,9 +13,9 @@ public struct LoRaMeshMessage: Equatable, Hashable, LoRaMessageProtocol {
     public static let messageType: LoRaMessageType = .meshMessage
     
     /// Mesh Message / Packet
-    public let message: Mesh.Message
+    public let message: Message
     
-    public init(message: Mesh.Message) {
+    public init(message: Message) {
         
         self.message = message
     }
@@ -29,7 +29,7 @@ public extension LoRaMeshMessage {
         
         guard let messageType = data.consume({ LoRaMessageType(rawValue: $0) }),
             messageType == type(of: self).messageType,
-            let message = data.suffix({ Mesh.Message(data: $0) })
+            let message = data.suffix({ Message(data: $0) })
             else { return nil }
         
         self.message = message

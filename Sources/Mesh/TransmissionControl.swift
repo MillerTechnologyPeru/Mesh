@@ -8,13 +8,26 @@
 import Foundation
 
 /// Mesh Transmission Control Protocol
-public enum TransmissionControl {
+public enum TransmissionControl: MessagePayload {
     
     public static var payloadType: PayloadType { return .transmissionControl }
     
     case metadata(Metadata)
     case chunk(DataChunk)
     case acknowledgement(Acknowledgement)
+}
+
+public extension TransmissionControl {
+    
+    public init?(data: Data) {
+        
+        fatalError()
+    }
+    
+    public var data: Data {
+        
+        fatalError()
+    }
 }
 
 public extension TransmissionControl {

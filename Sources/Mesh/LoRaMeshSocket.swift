@@ -8,7 +8,9 @@
 import Foundation
 
 @available(macOS 10.12, *)
-public final class LoRaMeshSocket <Socket: LoRaSocket> : MeshSocket {
+public final class LoRaMeshSocket <Socket: LoRaSocket> : MeshInterface {
+    
+    public static var linkLayer: LinkLayer { return .loRa }
     
     // MARK: - Properties
     

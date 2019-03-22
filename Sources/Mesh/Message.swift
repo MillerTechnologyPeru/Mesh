@@ -62,6 +62,23 @@ public struct Message: Equatable, Hashable {
 
 public extension Message {
     
+    public init <T: MessagePayload> (identifier: UUID = UUID(),
+                                     source: UUID,
+                                     destination: UUID,
+                                     hopLimit: UInt8 = .max,
+                                     payload: T) {
+        
+        self.identifier = identifier
+        self.source = source
+        self.destination = destination
+        self.hopLimit = hopLimit
+        self.payloadType = T.payloadType
+        self.payload = payload.data
+    }
+}
+
+public extension Message {
+    
     public init?(data: Data) {
         
         var data = DataIterator(data: data)

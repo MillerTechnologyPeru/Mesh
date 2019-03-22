@@ -28,11 +28,24 @@ public final class Mesh {
     
     public private(set) var protocols = [PayloadType: MeshProtocolController]()
     
-    internal private(set) var forwardedMessages = Set<UUID>()
+    internal private(set) var sentMessages = Set<UUID>() // TODO: Cache limit
     
     public init(identifier: UUID = UUID()) {
         
         self.identifier = identifier
+        loadStandardProtocols()
+    }
+    
+    private func loadStandardProtocols() {
+        
+        load(protocol: ControlMessageProtocol.self)
+    }
+    
+    public func load<T: MeshProtocolController>(protocol controllerType: T.Type) {
+        
+        let controller = T.init(identifier: identifier)
+        protocols[T.payloadType] = controller
+        controller.delegate = self
     }
     
     public func add(interface: MeshInterface) {
@@ -41,13 +54,24 @@ public final class Mesh {
         interface.read = { [weak self] in self?.didReceive($0, from: interface) }
     }
     
+    private func transmit(_ message: Message) {
+        
+        for interface in interfaces {
+            
+            do { try interface.write(message) }
+            catch { log?("Could not send message \(message.identifier)") }
+        }
+        
+        sentMessages.insert(message.identifier)
+    }
+    
     private func didReceive(_ message: Message, from interface: MeshInterface) {
         
         var message = message
         
         if message.destination == identifier {
             guard let controller = protocols[message.payloadType] else {
-                log?("Cannot handle protocol \(message.payloadType)")
+                log?("Cannot handle protocol \(message.payloadType) for message \(message.identifier)")
                 return
             }
             controller.didReceiveMessage(message)
@@ -56,7 +80,11 @@ public final class Mesh {
                 message.hopLimit -= 1 // decrease TTL
             }
             guard message.hopLimit >= 1 else {
-                log?("Too many hops, message will be discarded")
+                log?("Too many hops, message \(message.identifier) will be discarded")
+                return
+            }
+            guard sentMessages.contains(message.identifier) == false else {
+                log?("Already forwarded, message \(message.identifier) will be discarded")
                 return
             }
             // forward
@@ -64,18 +92,46 @@ public final class Mesh {
                 guard forwardInterface !== interface
                     else { continue } // dont forward on same interface recieved from
                 do { try forwardInterface.write(message) }
-                catch { log?("Could not forward message \(message)") }
-                forwardedMessages.insert(message.identifier)
+                catch { log?("Could not forward message \(message.identifier)") }
+                sentMessages.insert(message.identifier)
             }
         }
     }
 }
 
+// MARK: - MeshProtocolControllerDelegate
+
+extension Mesh: MeshProtocolControllerDelegate {
+    
+    public func protocolController(_ controller: MeshProtocolController, shouldTransmit message: Message) {
+        
+        transmit(message)
+    }
+    
+    public func protocolControllerLinkLayers(_ controller: MeshProtocolController) -> Set<LinkLayer> {
+        
+        return Set(interfaces.map({ type(of: $0).linkLayer }))
+    }
+}
+
+// MARK: - Supporting Types
+
 public protocol MeshProtocolController: class {
     
     static var payloadType: PayloadType { get }
     
+    var identifier: UUID { get }
+    
+    init(identifier: UUID)
+    
     func didReceiveMessage(_ message: Message)
     
-    var transmitMessage: (Message) -> () { get }
+    var delegate: MeshProtocolControllerDelegate? { get set }
+}
+
+public protocol MeshProtocolControllerDelegate: class {
+    
+    func protocolController(_ controller: MeshProtocolController, shouldTransmit message: Message)
+    
+    func protocolControllerLinkLayers(_ controller: MeshProtocolController) -> Set<LinkLayer>
 }

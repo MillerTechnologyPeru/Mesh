@@ -23,7 +23,7 @@ public struct LoRaMeshMessage: Equatable, Hashable, LoRaMessageProtocol {
 
 public extension LoRaMeshMessage {
     
-    public init?(data: Data) {
+    init?(data: Data) {
         
         var data = DataIterator(data: data)
         
@@ -35,7 +35,7 @@ public extension LoRaMeshMessage {
         self.message = message
     }
     
-    public var data: Data {
+    var data: Data {
         
         return Data(self)
     }

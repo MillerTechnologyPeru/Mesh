@@ -63,7 +63,7 @@ extension LoRaMessage: RawRepresentable {
 
 public extension LoRaMessage {
     
-    public init?(data: Data) {
+    init?(data: Data) {
         
         guard let type = data.first,
             let messageType = LoRaMessageType(rawValue: type)
@@ -81,7 +81,7 @@ public extension LoRaMessage {
         }
     }
     
-    public var data: Data {
+    var data: Data {
         
         switch self {
         case let .advertisement(message): return message.data

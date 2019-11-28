@@ -19,12 +19,12 @@ public enum TransmissionControl: MessagePayload {
 
 public extension TransmissionControl {
     
-    public init?(data: Data) {
+    init?(data: Data) {
         
         fatalError()
     }
     
-    public var data: Data {
+    var data: Data {
         
         fatalError()
     }
@@ -32,7 +32,7 @@ public extension TransmissionControl {
 
 public extension TransmissionControl {
     
-    public enum MessageType: UInt8 {
+    enum MessageType: UInt8 {
         
         case metadata
         case chunk
@@ -42,7 +42,7 @@ public extension TransmissionControl {
 
 public extension TransmissionControl {
     
-    public struct DataChunk {
+    struct DataChunk {
         
         public let port: UInt16
         
@@ -56,7 +56,7 @@ public extension TransmissionControl {
 
 public extension TransmissionControl {
     
-    public struct Metadata {
+    struct Metadata {
         
         public let identifier: UUID
         
@@ -72,7 +72,7 @@ public extension TransmissionControl {
 
 public extension TransmissionControl {
     
-    public struct Acknowledgement {
+    struct Acknowledgement {
         
         public let port: UInt16
         

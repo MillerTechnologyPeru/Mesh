@@ -42,7 +42,7 @@ internal extension LoRaAdvertisement {
 
 public extension LoRaAdvertisement {
     
-    public init?(data: Data) {
+    init?(data: Data) {
         
         var data = DataIterator(data: data)
         
@@ -57,7 +57,7 @@ public extension LoRaAdvertisement {
         self.location = flags.contains(.location) ? location : nil
     }
     
-    public var data: Data {
+    var data: Data {
         
         return Data(self)
     }
@@ -86,7 +86,7 @@ extension LoRaAdvertisement: DataConvertible {
 public extension LoRaAdvertisement {
     
     /// The latitude and longitude associated with a location, specified using the WGS 84 reference frame.
-    public struct Location: Equatable, Hashable {
+    struct Location: Equatable, Hashable {
         
         /// A latitude or longitude value specified in degrees.
         public typealias Degrees = Double
@@ -143,7 +143,7 @@ extension LoRaAdvertisement.Location: DataIterable {
 
 internal extension LoRaAdvertisement {
     
-    internal enum Flag: UInt8, BitMaskOption {
+    enum Flag: UInt8, BitMaskOption {
         
         case location = 0b01
     }

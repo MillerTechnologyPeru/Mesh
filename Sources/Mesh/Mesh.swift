@@ -8,7 +8,7 @@
 
 import Foundation
 
-/// Socket for writing mesh messages / packets.
+/// Interface for writing mesh messages / packets.
 public protocol MeshInterface: class {
     
     static var linkLayer: LinkLayer { get }

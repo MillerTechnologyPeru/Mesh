@@ -21,7 +21,7 @@ public enum ControlMessage: Equatable, MessagePayload {
 
 public extension ControlMessage {
     
-    public init?(data: Data) {
+    init?(data: Data) {
         
         guard let typeByte = data.first,
             let type = ControlMessageType(rawValue: typeByte)
@@ -58,7 +58,7 @@ public extension ControlMessage {
         }
     }
     
-    public var data: Data {
+    var data: Data {
         
         var data = Data(capacity: 1)
         data += type.rawValue

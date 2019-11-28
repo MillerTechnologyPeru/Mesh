@@ -1,14 +1,14 @@
-// swift-tools-version:4.1
+// swift-tools-version:5.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
-#if os(macOS)
-let nativeGATT = "DarwinGATT"
-let nativeBluetooth = "BluetoothDarwin"
-#elseif os(Linux)
-let nativeGATT = "GATT"
-let nativeBluetooth = "BluetoothLinux"
+#if os(Linux)
+let nativeBluetooth: Target.Dependency = "BluetoothLinux"
+let nativeGATT: Target.Dependency = "GATT"
+#elseif os(macOS)
+let nativeBluetooth: Target.Dependency = "BluetoothDarwin"
+let nativeGATT: Target.Dependency = "DarwinGATT"
 #endif
 
 let package = Package(
@@ -28,14 +28,31 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/PureSwift/\(nativeBluetooth).git", .branch("master")),
-        .package(url: "https://github.com/PureSwift/GATT.git", .branch("master")),
-        .package(url: "https://github.com/MillerTechnologyPeru/LoStik.git", .branch("swift")),
+        .package(
+            url: "https://github.com/PureSwift/Bluetooth.git",
+            .branch("master")
+        ),
+        .package(
+            url: "https://github.com/PureSwift/BluetoothLinux.git",
+            .branch("master")
+        ),
+        .package(
+            url: "https://github.com/PureSwift/BluetoothDarwin.git",
+            .branch("master")
+        ),
+        .package(
+            url: "https://github.com/PureSwift/GATT.git",
+            .branch("master")
+        ),
+        .package(
+            url: "https://github.com/MillerTechnologyPeru/LoStik.git",
+            .branch("swift")
+        )
     ],
     targets: [
         .target(
             name: "Mesh",
-            dependencies: ["GATT", "LoStik"]),
+            dependencies: ["Bluetooth", "GATT", "LoStik"]),
         .target(
             name: "meshutil",
             dependencies: ["Mesh"]),
@@ -43,11 +60,12 @@ let package = Package(
             name: "meshd",
             dependencies: [
                 "Mesh",
-                .byNameItem(name: nativeBluetooth),
-                .byNameItem(name: nativeGATT)
+                nativeBluetooth,
+                nativeGATT
             ]),
         .testTarget(
             name: "MeshTests",
-            dependencies: ["Mesh"]),
+            dependencies: ["Mesh"]
+        )
     ]
 )

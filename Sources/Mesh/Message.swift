@@ -62,7 +62,7 @@ public struct Message: Equatable, Hashable {
 
 public extension Message {
     
-    public init <T: MessagePayload> (identifier: UUID = UUID(),
+    init <T: MessagePayload> (identifier: UUID = UUID(),
                                      source: UUID,
                                      destination: UUID,
                                      hopLimit: UInt8 = .max,
@@ -79,7 +79,7 @@ public extension Message {
 
 public extension Message {
     
-    public init?(data: Data) {
+    init?(data: Data) {
         
         var data = DataIterator(data: data)
         
@@ -100,7 +100,7 @@ public extension Message {
         self.payload = data.suffix() ?? Data()
     }
     
-    public var data: Data {
+    var data: Data {
         
         return Data(self)
     }

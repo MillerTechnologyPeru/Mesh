@@ -59,9 +59,8 @@ func run(arguments: [String] = CommandLine.arguments) throws {
     let beacon = AppleBeacon(uuid: UUID(rawValue: "94D457BC-4F44-46DE-9EC6-1E3C8A045780")!, major: 0, minor: 0, rssi: 10)
     try hostController.iBeacon(beacon, flags: [.notSupportedBREDR, .lowEnergyGeneralDiscoverableMode])
     
-    // advertise every 30 sec
-    
-    advertisingTimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { _ in
+    // advertise every 30 sec to refresh iBeacon status
+    advertisingTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
         do { try hostController.enableLowEnergyAdvertising(enableAdvertising) }
         catch HCIError.commandDisallowed { }
         catch { print("Could not enable / disable Bluetooth advertising") }
@@ -89,7 +88,7 @@ func run(arguments: [String] = CommandLine.arguments) throws {
     
     #if os(macOS)
     // wait until XPC connection to bluetoothd is established and hardware is on
-    while peripheral.state != .poweredOn { sleep(1) }
+    try peripheral.waitPowerOn()
     #endif
     
     try peripheral.start()

@@ -70,7 +70,7 @@ public final class LoRaMeshSocket <Socket: LoRaSocket> : MeshInterface {
                         case let .advertisement(advertisement):
                             meshSocket.log?("Received advertisement for \(advertisement.identifier)")
                         case let .meshMessage(meshMessage):
-                            meshSocket.log?("Recieved message \(meshMessage.message.identifier)")
+                            meshSocket.log?("Recieved \(meshMessage.message.payloadType) message \(meshMessage.message.identifier)")
                             meshSocket.read(meshMessage.message)
                             /*
                             // consume or forward

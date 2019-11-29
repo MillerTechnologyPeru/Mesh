@@ -30,6 +30,8 @@ public final class Mesh {
     
     internal private(set) var sentMessages = Set<UUID>() // TODO: Cache limit
     
+    public var sendMessagesCacheLimit = 1000
+    
     public init(identifier: UUID = UUID()) {
         
         self.identifier = identifier
@@ -41,7 +43,7 @@ public final class Mesh {
         load(protocol: ControlMessageProtocol.self)
     }
     
-    public func load<T: MeshProtocolController>(protocol controllerType: T.Type) {
+    public func load <T: MeshProtocolController> (protocol controllerType: T.Type) {
         
         let controller = T.init(identifier: identifier)
         protocols[T.payloadType] = controller
@@ -62,7 +64,7 @@ public final class Mesh {
             catch { log?("Could not send message \(message.identifier)") }
         }
         
-        sentMessages.insert(message.identifier)
+        didSendMessage(message.identifier)
     }
     
     private func didReceive(_ message: Message, from interface: MeshInterface) {
@@ -93,9 +95,15 @@ public final class Mesh {
                     else { continue } // dont forward on same interface recieved from
                 do { try forwardInterface.write(message) }
                 catch { log?("Could not forward message \(message.identifier)") }
-                sentMessages.insert(message.identifier)
+                
+                didSendMessage(message.identifier)
             }
         }
+    }
+    
+    private func didSendMessage(_ identifier: UUID) {
+        
+        sentMessages.insert(identifier)
     }
 }
 
@@ -104,12 +112,10 @@ public final class Mesh {
 extension Mesh: MeshProtocolControllerDelegate {
     
     public func protocolController(_ controller: MeshProtocolController, shouldTransmit message: Message) {
-        
         transmit(message)
     }
     
     public func protocolControllerLinkLayers(_ controller: MeshProtocolController) -> Set<LinkLayer> {
-        
         return Set(interfaces.map({ type(of: $0).linkLayer }))
     }
 }

@@ -10,8 +10,10 @@ import Foundation
 /// LoRa Device
 public protocol LoRaSocket {
     
+    /// Transmit Data
     func transmit(_ data: Data) throws
     
+    /// Recieve Data
     func recieve(windowSize: UInt16) throws -> Data?
 }
 

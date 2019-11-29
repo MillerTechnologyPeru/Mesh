@@ -10,7 +10,7 @@ import Foundation
 /// LoRa Advertisment
 public struct LoRaAdvertisement: Equatable, Hashable, LoRaMessageProtocol {
     
-    public static let messageType: LoRaMessageType = .advertisement
+    public static var messageType: LoRaMessageType { return .advertisement }
     
     /// LoRa Device identifier / Address
     public let identifier: UUID

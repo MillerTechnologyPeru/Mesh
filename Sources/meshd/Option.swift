@@ -31,6 +31,9 @@ public enum Option: String {
     
     /// Advertise interval
     case advertiseInterval
+    
+    /// Ping / Echo
+    case ping
 }
 
 public extension Parameter {

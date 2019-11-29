@@ -124,7 +124,6 @@ public final class ControlMessageProtocol: MeshProtocolController {
     private var requests = [Request]()
     
     public init(identifier: UUID) {
-        
         self.identifier = identifier
     }
     

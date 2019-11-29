@@ -5,7 +5,7 @@
 //  Created by Alsey Coleman Miller on 3/15/19.
 //
 
-public enum LinkLayer: UInt8 {
+public enum LinkLayer: UInt8, CaseIterable {
     
     case bluetooth  = 1
     case loRa       = 2

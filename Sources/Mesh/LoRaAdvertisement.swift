@@ -49,12 +49,11 @@ public extension LoRaAdvertisement {
         guard let messageType = data.consume({ LoRaMessageType(rawValue: $0) }),
             messageType == type(of: self).messageType,
             let identifier = data.consume(UUID.self)?.littleEndian,
-            let flags = data.consume({ BitMaskOptionSet<Flag>(rawValue: $0) }),
-            let location = data.consume(Location.self)
+            let flags = data.consume({ BitMaskOptionSet<Flag>(rawValue: $0) })
             else { return nil }
-        
+                
         self.identifier = identifier
-        self.location = flags.contains(.location) ? location : nil
+        self.location = flags.contains(.location) ? data.consume(Location.self) : nil
     }
     
     var data: Data {
@@ -72,12 +71,12 @@ extension LoRaAdvertisement: DataConvertible {
         data += type(of: value).messageType.rawValue
         data += value.identifier.littleEndian
         data += value.flags.rawValue
-        data += value.location ?? Location(latitude: 0, longitude: 0)
+        value.location.flatMap { data += $0 }
     }
     
     var dataLength: Int {
-        
-        return 1 + UUID.length + 1 + Location.length
+
+        return 1 + UUID.length + 1 + (flags.contains(.location) ? Location.length : 0)
     }
 }
 

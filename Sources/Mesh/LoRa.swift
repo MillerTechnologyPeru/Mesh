@@ -18,6 +18,9 @@ public protocol LoRaSocket {
 }
 
 /// LoRa Message protocol
+///
+/// These are non-mesh P2P messages sent from one LoRa radio to another.
+/// Serves as the underlying
 public protocol LoRaMessageProtocol {
     
     /// LoRa Message Type
